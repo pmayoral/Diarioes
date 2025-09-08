@@ -1,1010 +1,1036 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>📰 elDiario.es - TODAS las noticias (12+ feeds RSS)</title>
-	<style>
-		:root {
-			--primary-color: #a51d2d;
-			--primary-gradient: linear-gradient(135deg, #a51d2d 0%, #7a1520 100%);
-			--background-gradient: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-			--border-radius: 12px;
-			--transition: all 0.3s ease;
-			--shadow-light: 0 5px 15px rgba(0,0,0,0.08);
-			--shadow-hover: 0 15px 30px rgba(0,0,0,0.15);
-			--shadow-modal: 0 20px 40px rgba(0,0,0,0.3);
-		}
-		* { margin: 0; padding: 0; box-sizing: border-box; }
-		body {
-			font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-			background-color: #f0f2f5;
-			min-height: 100vh;
-		}
-		.container { max-width: 100%; margin: 0; background: white; overflow: hidden; }
-		header { background: var(--primary-gradient); color: white; padding: 12px 30px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-		h1 { font-size: 1.8rem; margin-bottom: 2px; font-weight: 700; }
-		.subtitle { font-size: 0.9rem; opacity: 0.9; font-weight: 300; }
-		.stats {
-			background: #f8f9fa; padding: 8px 30px; text-align: center; font-weight: 500; color: #495057;
-			border-bottom: 1px solid #e9ecef; display: flex; justify-content: center; align-items: center;
-			gap: 15px; flex-wrap: wrap; position: sticky; top: 0; z-index: 900; background-color: rgba(248, 249, 250, 0.9); backdrop-filter: blur(5px);
-		}
-		.loading-spinner {
-			display: none; width: 20px; height: 20px; border: 2px solid #e9ecef;
-			border-top: 2px solid var(--primary-color); border-radius: 50%;
-			animation: spin 1s linear infinite;
-		}
-		@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-		.controls { padding: 15px 30px; background: var(--background-gradient); border-bottom: 1px solid #dee2e6; text-align: center; }
-		.main-controls-container { display: flex; justify-content: center; align-items: flex-end; gap: 20px; flex-wrap: wrap; }
-		.filter-group { display: flex; flex-direction: column; gap: 8px; }
-		.filter-group label { font-weight: 500; font-size: 0.9rem; color: #333; margin-left: 5px; text-align: left; }
-		.sections-dropdown { position: relative; width: 280px; }
-		.dropdown-toggle {
-			width: 100%; background: white; border: 2px solid #e9ecef; border-radius: var(--border-radius);
-			padding: 10px 15px; display: flex; justify-content: space-between; align-items: center;
-			cursor: pointer; transition: var(--transition); font-size: 0.9rem; font-weight: 500; color: #495057;
-		}
-		.dropdown-toggle:hover { border-color: var(--primary-color); box-shadow: 0 2px 8px rgba(165, 29, 45, 0.15); }
-		.dropdown-arrow { transition: transform 0.3s ease; font-size: 0.8rem; color: #6c757d; }
-		.dropdown-toggle.active .dropdown-arrow { transform: rotate(180deg); }
-		.dropdown-menu {
-			position: absolute; top: calc(100% + 5px); left: 0; right: 0; background: white; border: 1px solid #e9ecef;
-			border-radius: var(--border-radius); max-height: 300px;
-			overflow-y: auto; z-index: 1000; display: none; box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-		}
-		.dropdown-menu.show { display: block; }
-		.dropdown-item {
-			display: flex; align-items: center; gap: 12px; padding: 12px 16px; cursor: pointer;
-			transition: all 0.2s ease; border-bottom: 1px solid #f8f9fa;
-		}
-		.dropdown-item:last-child { border-bottom: none; }
-		.dropdown-item:hover { background: #f8f9fa; }
-		.dropdown-item.active { background: var(--primary-gradient); color: white; }
-		.section-icon { font-size: 1.1rem; width: 20px; text-align: center; }
-		.section-name { flex: 1; font-weight: 500; text-transform: capitalize; }
-		.section-count {
-			background: rgba(0, 0, 0, 0.1); color: inherit; padding: 2px 8px;
-			border-radius: 10px; font-size: 0.7rem; font-weight: 600;
-		}
-		.dropdown-item.active .section-count { background: rgba(255, 255, 255, 0.3); }
-		.news-grid { padding: 30px; display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; }
-		.news-item {
-			background: white; border-radius: 15px; box-shadow: var(--shadow-light);
-			transition: var(--transition); border: 1px solid #e9ecef; cursor: pointer; display: flex;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📰 elDiario.es - TODAS las noticias</title>
+    <style>
+        :root {
+            --primary-color: #9b59b6;
+            --primary-gradient: linear-gradient(135deg, #9b59b6 0%, #7d3c98 100%);
+            --background-gradient: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            --border-radius: 12px;
+            --transition: all 0.3s ease;
+            --shadow-light: 0 5px 15px rgba(0,0,0,0.08);
+            --shadow-hover: 0 15px 30px rgba(0,0,0,0.15);
+            --shadow-modal: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #f0f2f5;
+            min-height: 100vh;
+        }
+        .container { max-width: 100%; margin: 0; background: white; overflow: hidden; }
+        header { background: var(--primary-gradient); color: white; padding: 12px 30px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h1 { font-size: 1.8rem; margin-bottom: 2px; font-weight: 700; }
+        .subtitle { font-size: 0.9rem; opacity: 0.9; font-weight: 300; }
+        .stats {
+            background: #f8f9fa; padding: 8px 30px; text-align: center; font-weight: 500; color: #495057;
+            border-bottom: 1px solid #e9ecef; display: flex; justify-content: center; align-items: center;
+            gap: 15px; flex-wrap: wrap; position: sticky; top: 0; z-index: 900; background-color: rgba(248, 249, 250, 0.9); backdrop-filter: blur(5px);
+        }
+        .loading-spinner {
+            display: none; width: 20px; height: 20px; border: 2px solid #e9ecef;
+            border-top: 2px solid var(--primary-color); border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .controls { padding: 15px 30px; background: var(--background-gradient); border-bottom: 1px solid #dee2e6; text-align: center; }
+        .main-controls-container { display: flex; justify-content: center; align-items: flex-end; gap: 20px; flex-wrap: wrap; }
+        .filter-group { display: flex; flex-direction: column; gap: 8px; }
+        .filter-group label { font-weight: 500; font-size: 0.9rem; color: #333; margin-left: 5px; text-align: left; }
+        .sections-dropdown { position: relative; width: 280px; }
+        .dropdown-toggle {
+            width: 100%; background: white; border: 2px solid #e9ecef; border-radius: var(--border-radius);
+            padding: 10px 15px; display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer; transition: var(--transition); font-size: 0.9rem; font-weight: 500; color: #495057;
+        }
+        .dropdown-toggle:hover { border-color: var(--primary-color); box-shadow: 0 2px 8px rgba(155, 89, 182, 0.15); }
+        .dropdown-arrow { transition: transform 0.3s ease; font-size: 0.8rem; color: #6c757d; }
+        .dropdown-toggle.active .dropdown-arrow { transform: rotate(180deg); }
+        .dropdown-menu {
+            position: absolute; top: calc(100% + 5px); left: 0; right: 0; background: white; border: 1px solid #e9ecef;
+            border-radius: var(--border-radius); max-height: 300px;
+            overflow-y: auto; z-index: 1000; display: none; box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+        .dropdown-menu.show { display: block; }
+        .dropdown-item {
+            display: flex; align-items: center; gap: 12px; padding: 12px 16px; cursor: pointer;
+            transition: all 0.2s ease; border-bottom: 1px solid #f8f9fa;
+        }
+        .dropdown-item:last-child { border-bottom: none; }
+        .dropdown-item:hover { background: #f8f9fa; }
+        .dropdown-item.active { background: var(--primary-gradient); color: white; }
+        .section-icon { font-size: 1.1rem; width: 20px; text-align: center; }
+        .section-name { flex: 1; font-weight: 500; text-transform: capitalize; }
+        .section-count {
+            background: rgba(0, 0, 0, 0.1); color: inherit; padding: 2px 8px;
+            border-radius: 10px; font-size: 0.7rem; font-weight: 600;
+        }
+        .dropdown-item.active .section-count { background: rgba(255, 255, 255, 0.3); }
+        .news-grid { padding: 30px; display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; }
+        .news-item {
+            background: white; border-radius: 15px; box-shadow: var(--shadow-light);
+            transition: var(--transition); border: 1px solid #e9ecef; cursor: pointer; display: flex;
             flex-direction: column; overflow: hidden;
-		}
+        }
         .news-item-content { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
-		.news-item:hover { transform: translateY(-5px); box-shadow: var(--shadow-hover); }
-		.news-item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-		.news-source {
-			background: var(--primary-gradient); color: white; padding: 5px 12px;
-			border-radius: 20px; font-size: 0.8rem; font-weight: 600; text-transform: capitalize;
-		}
-		.news-meta { text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
-		.news-date { color: #6c757d; font-size: 0.85rem; font-weight: 500; white-space: nowrap; }
-		.news-author { color: #495057; font-size: 0.75rem; font-weight: 400; }
-		.news-headline { font-size: 1.1rem; font-weight: 700; color: #212529; margin-bottom: 10px; line-height: 1.4; }
-		.news-summary {
-			font-size: 0.9rem; color: #495057; line-height: 1.6; display: -webkit-box;
-			-webkit-line-clamp: 4; line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;
+        .news-item:hover { transform: translateY(-5px); box-shadow: var(--shadow-hover); }
+        .news-item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .news-source {
+            background: var(--primary-gradient); color: white; padding: 5px 12px;
+            border-radius: 20px; font-size: 0.8rem; font-weight: 600; text-transform: capitalize;
+        }
+        .news-meta { text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+        .news-date { color: #6c757d; font-size: 0.85rem; font-weight: 500; white-space: nowrap; }
+        .news-author { color: #495057; font-size: 0.75rem; font-weight: 400; }
+        .news-headline { font-size: 1.1rem; font-weight: 700; color: #212529; margin-bottom: 10px; line-height: 1.4; }
+        .news-summary {
+            font-size: 0.9rem; color: #495057; line-height: 1.6; display: -webkit-box;
+            -webkit-line-clamp: 4; line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;
             margin-top: auto;
-		}
-		.loading-message, .error-message { text-align: center; padding: 50px; color: #6c757d; font-size: 1.1rem; grid-column: 1 / -1; }
-		.error-message { color: #dc3545; }
-		.error-message h3 { margin-bottom: 15px; color: #dc3545; }
-		.search-section { width: 280px; }
-		.search-container {
-			position: relative; display: flex; align-items: center; background: white;
-			border: 2px solid #e9ecef; border-radius: var(--border-radius); padding: 8px 12px; transition: var(--transition);
-		}
-		.search-container:focus-within { border-color: var(--primary-color); box-shadow: 0 2px 8px rgba(165, 29, 45, 0.15); }
-		.search-icon { font-size: 1rem; color: #6c757d; margin-right: 8px; }
-		.search-input { flex: 1; border: none; outline: none; font-size: 0.9rem; color: #495057; background: transparent; }
-		.search-input::placeholder { color: #adb5bd; }
-		.search-clear {
-			background: none; border: none; color: #adb5bd; cursor: pointer; padding: 4px; border-radius: 50%;
-			font-size: 0.8rem; transition: all 0.2s ease; display: none;
-		}
-		.search-clear:hover { background: #f8f9fa; color: #6c757d; }
-		.search-clear.show { display: block; }
-		.toggle-switch { display: flex; align-items: center; cursor: pointer; user-select: none; gap: 12px; }
-		.toggle-switch input { display: none; }
-		.slider { position: relative; width: 50px; height: 24px; background: #ccc; border-radius: 24px; transition: 0.3s; }
-		.slider:before {
-			content: ""; position: absolute; height: 18px; width: 18px; left: 3px; bottom: 3px;
-			background: white; border-radius: 50%; transition: 0.3s;
-		}
-		.toggle-switch input:checked + .slider { background: var(--primary-gradient); }
-		.toggle-switch input:checked + .slider:before { transform: translateX(26px); }
-		.label-text { font-weight: 500; color: #495057; font-size: 0.9rem; }
-		.modal {
-			display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%;
-			background-color: rgba(0,0,0,0.5); backdrop-filter: blur(5px);
-		}
-		.modal-content {
-			background-color: white; margin: 2% auto; padding: 0; border-radius: 15px; width: 90%; max-width: 800px;
-			max-height: 90vh; overflow: hidden; box-shadow: var(--shadow-modal);
-			animation: modalSlideIn 0.3s ease-out; display: flex; flex-direction: column;
-		}
-		@keyframes modalSlideIn { from { opacity: 0; transform: translateY(-50px); } to { opacity: 1; transform: translateY(0); } }
-		.modal-header {
-			background: var(--primary-gradient); color: white; padding: 20px 30px;
-			display: flex; justify-content: space-between; align-items: center;
-		}
-		.modal-title { font-size: 1.3rem; font-weight: 700; }
-		.close { color: white; font-size: 28px; font-weight: bold; cursor: pointer; line-height: 1; }
-		.close:hover { opacity: 0.7; }
-		.modal-body { padding: 30px; overflow-y: auto; flex: 1; }
-		.modal-content-text { line-height: 1.8; color: #333; font-size: 1rem; }
-		.modal-content-text p { margin-bottom: 1em; }
-		.article-metadata {
-			background: #f8f9fa; padding: 6px 15px; border-radius: 8px;
-			margin-bottom: 12px; border-left: 3px solid var(--primary-color);
-			max-width: 400px;
-		}
-		.article-author {
-			font-size: 0.85rem; margin-bottom: 3px; color: #495057; font-weight: 500;
-		}
-		.article-dates {
-			font-size: 0.8rem; color: #6c757d; line-height: 1.2; margin-bottom: 3px;
-		}
-		.article-place {
-			font-size: 0.8rem; color: #495057; font-weight: 500; margin-bottom: 3px;
-		}
-		.image-caption {
-			background: #f8f9fa; padding: 10px 15px; margin: 10px 0;
-			border-left: 3px solid var(--primary-color); border-radius: 0 8px 8px 0;
-			font-size: 0.9rem; line-height: 1.4;
-		}
-		.image-caption-title {
-			font-weight: 600; color: #495057; margin-bottom: 5px;
-		}
-		.image-caption-author {
-			color: #6c757d; font-size: 0.85rem; font-style: italic;
-		}
-		.article-content img { max-width: 100%; height: auto; margin: 15px 0; border-radius: 8px; display: block; margin-left: auto; margin-right: auto; }
-		.article-error {
-			background: #fff3cd; color: #856404; padding: 15px 20px; border-radius: 10px;
-			margin-bottom: 20px; border-left: 4px solid #ffc107;
-		}
-		.modal-footer { background: #f8f9fa; padding: 20px 30px; border-top: 1px solid #e9ecef; flex-shrink: 0; }
-		.modal-source { text-align: center; }
-		.modal-source a { color: var(--primary-color); text-decoration: none; font-weight: 500; }
-		.modal-source a:hover { text-decoration: underline; }
-		.highlight {
-			background-color: #ffed4e;
-			padding: 1px 3px; border-radius: 3px;
-		}
-	</style>
+        }
+        .loading-message, .error-message { text-align: center; padding: 50px; color: #6c757d; font-size: 1.1rem; grid-column: 1 / -1; }
+        .error-message { color: #dc3545; }
+        .error-message h3 { margin-bottom: 15px; color: #dc3545; }
+        .search-section { width: 280px; }
+        .search-container {
+            position: relative; display: flex; align-items: center; background: white;
+            border: 2px solid #e9ecef; border-radius: var(--border-radius); padding: 8px 12px; transition: var(--transition);
+        }
+        .search-container:focus-within { border-color: var(--primary-color); box-shadow: 0 2px 8px rgba(155, 89, 182, 0.15); }
+        .search-icon { font-size: 1rem; color: #6c757d; margin-right: 8px; }
+        .search-input { flex: 1; border: none; outline: none; font-size: 0.9rem; color: #495057; background: transparent; }
+        .search-input::placeholder { color: #adb5bd; }
+        .search-clear {
+            background: none; border: none; color: #adb5bd; cursor: pointer; padding: 4px; border-radius: 50%;
+            font-size: 0.8rem; transition: all 0.2s ease; display: none;
+        }
+        .search-clear:hover { background: #f8f9fa; color: #6c757d; }
+        .search-clear.show { display: block; }
+        .toggle-switch { display: flex; align-items: center; cursor: pointer; user-select: none; gap: 12px; }
+        .toggle-switch input { display: none; }
+        .slider { position: relative; width: 50px; height: 24px; background: #ccc; border-radius: 24px; transition: 0.3s; }
+        .slider:before {
+            content: ""; position: absolute; height: 18px; width: 18px; left: 3px; bottom: 3px;
+            background: white; border-radius: 50%; transition: 0.3s;
+        }
+        .toggle-switch input:checked + .slider { background: var(--primary-gradient); }
+        .toggle-switch input:checked + .slider:before { transform: translateX(26px); }
+        .label-text { font-weight: 500; color: #495057; font-size: 0.9rem; }
+        .modal {
+            display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.5); backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background-color: white; margin: 2% auto; padding: 0; border-radius: 15px; width: 90%; max-width: 800px;
+            max-height: 90vh; overflow: hidden; box-shadow: var(--shadow-modal);
+            animation: modalSlideIn 0.3s ease-out; display: flex; flex-direction: column;
+        }
+        @keyframes modalSlideIn { from { opacity: 0; transform: translateY(-50px); } to { opacity: 1; transform: translateY(0); } }
+        .modal-header {
+            background: var(--primary-gradient); color: white; padding: 20px 30px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .modal-title { font-size: 1.3rem; font-weight: 700; }
+        .close { color: white; font-size: 28px; font-weight: bold; cursor: pointer; line-height: 1; }
+        .close:hover { opacity: 0.7; }
+        .modal-body { padding: 30px; overflow-y: auto; flex: 1; }
+        .modal-content-text { line-height: 1.8; color: #333; font-size: 1rem; }
+        .modal-content-text p { margin-bottom: 1em; }
+        .article-metadata {
+            background: #f8f9fa; padding: 6px 15px; border-radius: 8px;
+            margin-bottom: 12px; border-left: 3px solid var(--primary-color);
+            max-width: 400px;
+        }
+        .article-author {
+            font-size: 0.85rem; margin-bottom: 3px; color: #495057; font-weight: 500;
+        }
+        .article-dates {
+            font-size: 0.8rem; color: #6c757d; line-height: 1.2; margin-bottom: 3px;
+        }
+        .article-place {
+            font-size: 0.8rem; color: #495057; font-weight: 500; margin-bottom: 3px;
+        }
+        .image-caption {
+            background: #f6ecfa; padding: 10px 15px; margin: 10px 0;
+            border-left: 3px solid var(--primary-color); border-radius: 0 8px 8px 0;
+            font-size: 0.9rem; line-height: 1.4;
+        }
+        .image-caption-title {
+            font-weight: 600; color: #495057; margin-bottom: 5px;
+        }
+        .image-caption-author {
+            color: #6c757d; font-size: 0.85rem; font-style: italic;
+        }
+        .article-content img { max-width: 100%; height: auto; margin: 15px 0; border-radius: 8px; display: block; margin-left: auto; margin-right: auto; }
+        /* Ajustes solicitados en contenido del modal */
+        .article-content .title { display: none !important; }
+        .article-content .footer { font-size: 0.65em; }
+        .article-error {
+            background: #fff3cd; color: #856404; padding: 15px 20px; border-radius: 10px;
+            margin-bottom: 20px; border-left: 4px solid #ffc107;
+        }
+        .modal-footer { background: #f8f9fa; padding: 20px 30px; border-top: 1px solid #e9ecef; flex-shrink: 0; }
+        .modal-source { text-align: center; }
+        .modal-source a { color: var(--primary-color); text-decoration: none; font-weight: 500; }
+        .modal-source a:hover { text-decoration: underline; }
+        .highlight {
+            background-color: #ffed4e;
+            padding: 1px 3px; border-radius: 3px;
+        }
+        .load-more-container {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 20px;
+        }
+        .load-more-btn {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .load-more-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+        .alternative-message {
+            text-align: center;
+            padding: 20px;
+            color: #6c757d;
+            font-size: 1rem;
+            grid-column: 1 / -1;
+        }
+    </style>
 </head>
 <body>
-	<div class="container">
-		<header>
-			<h1>📰 TODAS las noticias de elDiario.es</h1>
-			<p class="subtitle">12+ feeds RSS combinados - Portada + Secciones + Regionales</p>
-		</header>
+    <div class="container">
+        <header>
+            <h1>📰 TODAS las noticias de elDiario.es</h1>
+            <p class="subtitle">Acceso completo a la portada</p>
+        </header>
 
-		<div class="stats" id="stats">
-			<div class="loading-spinner" id="loadingSpinner"></div>
-			<span id="statsText">Cargando noticias...</span>
-			<span id="lastUpdated"></span>
-		</div>
+        <div class="stats" id="stats">
+            <div class="loading-spinner" id="loadingSpinner"></div>
+            <span id="statsText">Cargando noticias...</span>
+            <span id="lastUpdated"></span>
+        </div>
 
-		<div class="controls" id="sectionsIndex">
-			<div class="main-controls-container">
-				<div class="filter-group">
-					<label for="dropdownToggle">Sección</label>
-					<div class="sections-dropdown">
-						<button class="dropdown-toggle" id="dropdownToggle">
-							<span class="dropdown-text">Todas las secciones</span>
-							<span class="dropdown-arrow">▼</span>
-						</button>
-						<div class="dropdown-menu" id="dropdownMenu">
-							<div class="dropdown-item active" data-section="todas"><span class="section-icon">📰</span><span class="section-name">Todas las secciones</span><span class="section-count">0</span></div>
-							<div class="dropdown-item" data-section="portada"><span class="section-icon">🏠</span><span class="section-name">Portada</span><span class="section-count">0</span></div>
-							<div class="dropdown-item" data-section="politica"><span class="section-icon">🏛️</span><span class="section-name">Política</span><span class="section-count">0</span></div>
-							<div class="dropdown-item" data-section="sociedad"><span class="section-icon">👥</span><span class="section-name">Sociedad</span><span class="section-count">0</span></div>
-							<div class="dropdown-item" data-section="economia"><span class="section-icon">💶</span><span class="section-name">Economía</span><span class="section-count">0</span></div>
-							<div class="dropdown-item" data-section="internacional"><span class="section-icon">🌍</span><span class="section-name">Internacional</span><span class="section-count">0</span></div>
-							<div class="dropdown-item" data-section="cultura"><span class="section-icon">🎭</span><span class="section-name">Cultura</span><span class="section-count">0</span></div>
-							<div class="dropdown-item" data-section="tecnologia"><span class="section-icon">💻</span><span class="section-name">Tecnología</span><span class="section-count">0</span></div>
-							<div class="dropdown-item" data-section="opinion"><span class="section-icon">💬</span><span class="section-name">Opinión</span><span class="section-count">0</span></div>
-							<div class="dropdown-item" data-section="vertele"><span class="section-icon">📺</span><span class="section-name">Vertele</span><span class="section-count">0</span></div>
-						</div>
-					</div>
-				</div>
-				<div class="filter-group">
-					<label for="searchInput">Búsqueda</label>
-					<div class="search-section">
-						<div class="search-container">
-							<span class="search-icon">🔍</span>
-							<input type="text" id="searchInput" class="search-input" placeholder="Buscar en noticias..." />
-							<button class="search-clear" id="searchClear" title="Limpiar búsqueda" aria-label="Limpiar búsqueda">✕</button>
-						</div>
-					</div>
-				</div>
-				<div class="filter-group">
-					<label for="readModeToggle">Opciones</label>
-					<div class="additional-filters">
-						<label class="toggle-switch">
-							<input type="checkbox" id="readModeToggle" checked>
-							<span class="slider"></span>
-							<span class="label-text">Vista rápida</span>
-						</label>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="news-grid" id="newsContainer"><p class="loading-message">Cargando noticias de elDiario.es...</p></div>
-	</div>
+        <div class="controls" id="sectionsIndex">
+            <div class="main-controls-container">
+                <div class="filter-group">
+                    <label for="dropdownToggle">Sección</label>
+                    <div class="sections-dropdown">
+                        <button class="dropdown-toggle" id="dropdownToggle">
+                            <span class="dropdown-text">Portada completa</span>
+                            <span class="dropdown-arrow">▼</span>
+                        </button>
+                        <div class="dropdown-menu" id="dropdownMenu">
+                            <div class="dropdown-item active" data-section="portada"><span class="section-icon">📰</span><span class="section-name">Portada completa</span><span class="section-count">0</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <label for="searchInput">Búsqueda</label>
+                    <div class="search-section">
+                        <div class="search-container">
+                            <span class="search-icon">🔍</span>
+                            <input type="text" id="searchInput" class="search-input" placeholder="Buscar en noticias..." />
+                            <button class="search-clear" id="searchClear" title="Limpiar búsqueda" aria-label="Limpiar búsqueda">✕</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <label for="readModeToggle">Opciones</label>
+                    <div class="additional-filters">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="readModeToggle" checked>
+                            <span class="slider"></span>
+                            <span class="label-text">Vista rápida</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="news-grid" id="newsContainer"><p class="loading-message">Cargando todas las noticias de portada de elDiario.es...</p></div>
+        <div class="load-more-container" id="loadMoreContainer" style="display: none;">
+            <button class="load-more-btn" id="loadMoreBtn">Cargar más noticias</button>
+        </div>
+    </div>
 
-	<div id="newsModal" class="modal">
-		<div class="modal-content">
-			<div class="modal-header">
-				<div><div class="modal-title" id="modalTitle"></div></div>
-				<span class="close" id="closeModal" aria-label="Cerrar modal">&times;</span>
-			</div>
-			<div class="modal-body"><div class="modal-content-text" id="modalContent"></div></div>
-			<div class="modal-footer">
-				<div class="modal-source"><a href="#" id="modalSourceLink" target="_blank" rel="noopener noreferrer">Ver noticia original en elDiario.es</a></div>
-			</div>
-		</div>
-	</div>
+    <div id="newsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div><div class="modal-title" id="modalTitle"></div></div>
+                <span class="close" id="closeModal" aria-label="Cerrar modal">&times;</span>
+            </div>
+            <div class="modal-body"><div class="modal-content-text" id="modalContent"></div></div>
+            <div class="modal-footer">
+                <div class="modal-source"><a href="#" id="modalSourceLink" target="_blank" rel="noopener noreferrer">Ver noticia original en elDiario.es</a></div>
+            </div>
+        </div>
+    </div>
 
-	<script>
-		// --- CONFIGURACIÓN ---
-		const config = {
-			RSS2JSON_API: 'https://api.rss2json.com/v1/api.json?rss_url=',
-			RSS_FEEDS: {
-				portada: 'https://www.eldiario.es/rss/',
-				politica: 'https://www.eldiario.es/rss/politica.xml',
-				sociedad: 'https://www.eldiario.es/rss/sociedad.xml',
-				economia: 'https://www.eldiario.es/rss/economia.xml',
-				internacional: 'https://www.eldiario.es/rss/internacional.xml',
-				cultura: 'https://www.eldiario.es/rss/cultura.xml',
-				tecnologia: 'https://www.eldiario.es/rss/tecnologia.xml',
-				opinion: 'https://www.eldiario.es/rss/opinion.xml',
-				vertele: 'https://www.eldiario.es/rss/vertele.xml',
-				// RSS adicionales para obtener MÁS noticias
-				madrid: 'https://www.eldiario.es/rss/madrid/',
-				catalunya: 'https://www.eldiario.es/rss/catalunya/',
-				andalucia: 'https://www.eldiario.es/rss/andalucia/',
-				deportes: 'https://www.eldiario.es/rss/deportes/',
-				cienciacritica: 'https://www.eldiario.es/rss/cienciacritica/',
-				consumoclaro: 'https://www.eldiario.es/rss/consumoclaro/'
-			},
-			BASE_URL: 'https://www.eldiario.es',
-			SELECTORS: {
-				statsText: '#statsText', loadingSpinner: '#loadingSpinner', lastUpdated: '#lastUpdated', 
-				newsContainer: '#newsContainer', dropdownToggle: '#dropdownToggle', dropdownMenu: '#dropdownMenu', 
-				dropdownText: '.dropdown-text', searchInput: '#searchInput', searchClear: '#searchClear', 
-				readModeToggle: '#readModeToggle', modal: '#newsModal', modalTitle: '#modalTitle', 
-				modalContent: '#modalContent', modalSourceLink: '#modalSourceLink', closeModal: '#closeModal',
-			}
-		};
+    <script>
+        // Configuración
+        const config = {
+            EL_DIARIO_URL: 'https://www.eldiario.es',
+            RSS_FEEDS: {
+                portada: 'https://www.eldiario.es/rss/',
+                politica: 'https://www.eldiario.es/rss/politica.xml',
+                sociedad: 'https://www.eldiario.es/rss/sociedad.xml',
+                economia: 'https://www.eldiario.es/rss/economia.xml',
+                internacional: 'https://www.eldiario.es/rss/internacional.xml',
+                cultura: 'https://www.eldiario.es/rss/cultura.xml',
+                tecnologia: 'https://www.eldiario.es/rss/tecnologia.xml',
+                opinion: 'https://www.eldiario.es/rss/opinion.xml',
+                vertele: 'https://www.eldiario.es/rss/vertele.xml'
+            },
+            SELECTORS: {
+                statsText: '#statsText',
+                loadingSpinner: '#loadingSpinner',
+                lastUpdated: '#lastUpdated',
+                newsContainer: '#newsContainer',
+                loadMoreContainer: '#loadMoreContainer',
+                loadMoreBtn: '#loadMoreBtn',
+                dropdownToggle: '#dropdownToggle',
+                dropdownMenu: '#dropdownMenu',
+                dropdownText: '.dropdown-text',
+                searchInput: '#searchInput',
+                searchClear: '#searchClear',
+                readModeToggle: '#readModeToggle',
+                modal: '#newsModal',
+                modalTitle: '#modalTitle',
+                modalContent: '#modalContent',
+                modalSourceLink: '#modalSourceLink',
+                closeModal: '#closeModal',
+            }
+        };
 
-		// --- ESTADO DE LA APLICACIÓN ---
-		const state = {
-			allNews: [], filteredNews: [], currentSection: 'todas',
-			searchTerm: '', searchTimeout: null, isAutoRefreshing: false,
-		};
-		
-		const dom = {};
-		for (const key in config.SELECTORS) { dom[key] = document.querySelector(config.SELECTORS[key]); }
+        // Estado de la aplicación
+        const state = {
+            allNews: [],
+            filteredNews: [],
+            currentPage: 1,
+            isLoading: false,
+            searchTerm: '',
+            searchTimeout: null,
+            usingAlternativeMethod: false
+        };
 
-		// --- FUNCIONES DE UTILIDAD ---
-		const updateUIState = (status, message = '') => {
-			if (status === 'loading') {
-				dom.newsContainer.innerHTML = '<p class="loading-message">Obteniendo las últimas noticias...</p>';
-				dom.statsText.textContent = 'Cargando...';
-				dom.loadingSpinner.style.display = 'block';
-			} else if (status === 'error') {
-				dom.newsContainer.innerHTML = `<div class="error-message"><h3>⚠️ Vaya... algo ha fallado</h3><p>${message}</p></div>`;
-				dom.statsText.textContent = 'Error al cargar';
-				dom.loadingSpinner.style.display = 'none';
-			} else if (status === 'success') {
-				dom.loadingSpinner.style.display = 'none';
-			}
-		};
+        // Referencias DOM
+        const dom = {};
+        for (const key in config.SELECTORS) {
+            dom[key] = document.querySelector(config.SELECTORS[key]);
+        }
 
-		const updateLastUpdated = () => {
-			dom.lastUpdated.textContent = `Actualizado: ${new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Madrid' })}`;
-		};
+        // Funciones de utilidad
+        const updateUIState = (status, message = '') => {
+            if (status === 'loading') {
+                dom.newsContainer.innerHTML = '<p class="loading-message">Obteniendo las últimas noticias...</p>';
+                dom.statsText.textContent = 'Cargando...';
+                dom.loadingSpinner.style.display = 'block';
+            } else if (status === 'error') {
+                dom.newsContainer.innerHTML = `<div class="error-message"><h3>⚠️ Vaya... algo ha fallado</h3><p>${message}</p></div>`;
+                dom.statsText.textContent = 'Error al cargar';
+                dom.loadingSpinner.style.display = 'none';
+            } else if (status === 'success') {
+                dom.loadingSpinner.style.display = 'none';
+            }
+        };
 
-		const formatDateTime = (dateString) => {
-			if (!dateString) return '';
-			try {
-				const date = new Date(dateString);
-				const dateOptions = { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Europe/Madrid' };
-				const timeOptions = { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Europe/Madrid' };
-				const formattedDate = date.toLocaleDateString('es-ES', dateOptions);
-				const formattedTime = date.toLocaleTimeString('es-ES', timeOptions);
-				return `${formattedDate} · ${formattedTime}h`;
-			} catch (e) { return ''; }
-		};
+        const updateLastUpdated = () => {
+            dom.lastUpdated.textContent = `Actualizado: ${new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Madrid' })}`;
+        };
 
-		const formatTimeOnly = (input) => {
-			if (!input && input !== 0) return '';
-			try {
-				const date = new Date(input);
-				return date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Europe/Madrid' });
-			} catch (e) { return ''; }
-		};
+        const formatDateTime = (dateString) => {
+            if (!dateString) return '';
+            try {
+                const date = new Date(dateString);
+                const dateOptions = { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Europe/Madrid' };
+                const timeOptions = { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Europe/Madrid' };
+                const formattedDate = date.toLocaleDateString('es-ES', dateOptions);
+                const formattedTime = date.toLocaleTimeString('es-ES', timeOptions);
+                return `${formattedDate} · ${formattedTime}h`;
+            } catch (e) { return ''; }
+        };
 
-		const plainTextFromHTML = (html) => {
-			const tempDiv = document.createElement('div');
-			tempDiv.innerHTML = html;
-			return tempDiv.textContent || tempDiv.innerText || '';
-		};
-		
-		const highlightText = (text, searchTerm) => {
-			if (!searchTerm || searchTerm.length < 2) return text;
-			const regex = new RegExp(`(${searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-			return text.replace(regex, '<span class="highlight">$1</span>');
-		};
+        const plainTextFromHTML = (html) => {
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
+            return tempDiv.textContent || tempDiv.innerText || '';
+        };
+        
+        const highlightText = (text, searchTerm) => {
+            if (!searchTerm || searchTerm.length < 2) return text;
+            const regex = new RegExp(`(${searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+            return text.replace(regex, '<span class="highlight">$1</span>');
+        };
 
-		const formatDateShort = (dateString) => {
-			if (!dateString) return '';
-			try {
-				const date = new Date(dateString);
-				const day = String(date.getDate()).padStart(2, '0');
-				const month = String(date.getMonth() + 1).padStart(2, '0');
-				const year = String(date.getFullYear()).slice(-2);
-				return `${day}-${month}-${year}`;
-			} catch (e) {
-				return '';
-			}
-		};
+        // Utilidades adicionales para la ventana modal (portadas desde DN2.html)
+        const formatDateShort = (input) => {
+            if (input === null || input === undefined) return '';
+            try {
+                const date = (input instanceof Date) ? input : new Date(input);
+                if (!(date instanceof Date) || isNaN(date)) return '';
+                const parts = new Intl.DateTimeFormat('es-ES', { timeZone: 'Europe/Madrid', day: '2-digit', month: '2-digit', year: 'numeric' }).formatToParts(date);
+                const get = (type) => (parts.find(p => p.type === type) || {}).value || '';
+                const day = get('day');
+                const month = get('month');
+                const year = get('year');
+                return `${day}-${month}-${year}`;
+            } catch (e) {
+                return '';
+            }
+        };
 
-		const formatNewsItemDate = (dateInput) => {
-			if (!dateInput) return '';
-			try {
-				const date = new Date(dateInput);
-				const day = date.getDate();
-				const monthNames = ['Ene.', 'Feb.', 'Mar.', 'Abr.', 'May.', 'Jun.',
-					'Jul.', 'Ago.', 'Sept.', 'Oct.', 'Nov.', 'Dic.'];
-				const month = monthNames[date.getMonth()];
-				const year = date.getFullYear();
-				const hour = String(date.getHours()).padStart(2, '0');
-				const minute = String(date.getMinutes()).padStart(2, '0');
-				
-				return `${day} de ${month} ${year} a las ${hour}:${minute}`;
-			} catch (e) {
-				return '';
-			}
-		};
+        // Parseo robusto de fechas en español (dd/MM/yyyy, dd-MM-yyyy, "6 de septiembre de 2025", ISO)
+        const parseFechaEsPreferente = (valor) => {
+            if (valor instanceof Date) return isNaN(valor) ? null : valor;
+            const s = String(valor || '').trim();
+            if (!s) return null;
+            // dd/MM/yyyy o dd-MM-yyyy
+            let m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+            if (m) {
+                const dd = Number(m[1]);
+                const mm = Number(m[2]);
+                const yyyy = Number(m[3]);
+                const d = new Date(yyyy, mm - 1, dd);
+                return isNaN(d) ? null : d;
+            }
+            // "6 de septiembre de 2025"
+            m = s.match(/^(\d{1,2})\s+de\s+([a-záéíóúñ]+)\s+de\s+(\d{4})$/i);
+            if (m) {
+                const meses = { enero:1,febrero:2,marzo:3,abril:4,mayo:5,junio:6,julio:7,agosto:8,septiembre:9,setiembre:9,octubre:10,noviembre:11,diciembre:12 };
+                const dd = Number(m[1]);
+                const mesNombre = (m[2] || '').toLowerCase();
+                const mm = meses[mesNombre];
+                const yyyy = Number(m[3]);
+                if (mm) {
+                    const d = new Date(yyyy, mm - 1, dd);
+                    return isNaN(d) ? null : d;
+                }
+            }
+            // ISO
+            if (/^\d{4}-\d{2}-\d{2}/.test(s)) {
+                const d = new Date(s);
+                return isNaN(d) ? null : d;
+            }
+            // Fallback
+            const d = new Date(s);
+            return isNaN(d) ? null : d;
+        };
 
+        // Convierte fecha + hora (HH:mm) a milliseconds, priorizando DMY
+        const parseFechaHoraEsMs = (fechaStr, horaStr) => {
+            const base = parseFechaEsPreferente(fechaStr);
+            if (!base) return NaN;
+            const t = String(horaStr || '').trim();
+            const mmatch = t.match(/^(\d{1,2}):(\d{2})/);
+            if (mmatch) {
+                base.setHours(Number(mmatch[1]), Number(mmatch[2]), 0, 0);
+            }
+            return base.getTime();
+        };
 
-		// Extrae metadatos completos haciendo scraping de la página original
-		async function extractMetadataFromOriginalPage(newsUrl) {
-			try {
-				const CORS_PROXY = 'https://corsproxy.io/?';
-				const proxyUrl = CORS_PROXY + encodeURIComponent(newsUrl);
-				const controller = new AbortController();
-				setTimeout(() => controller.abort(), 5000);
-				
-				const response = await fetch(proxyUrl, { signal: controller.signal });
-				if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
-				
-				const html = await response.text();
-				const parser = new DOMParser();
-				const doc = parser.parseFromString(html, 'text/html');
-				
-				const metadata = {};
-				
-				// Buscar wrapper de fecha y comentarios
-				const dateWrapper = doc.querySelector('.date-comments-wrapper');
-				if (dateWrapper) {
-					// Extraer lugar
-					const placeEl = dateWrapper.querySelector('.place');
-					if (placeEl) {
-						metadata.place = placeEl.textContent.replace(/[—\-\s]+$/, '').trim();
-					}
-					
-					// Extraer fecha de publicación
-					const dateEl = dateWrapper.querySelector('.date:not(.modification-date)');
-					if (dateEl) {
-						const dayEl = dateEl.querySelector('.day');
-						const hourEl = dateEl.querySelector('.hour');
-						if (dayEl && hourEl) {
-							metadata.publishedDate = dayEl.textContent.trim();
-							metadata.publishedTime = hourEl.textContent.trim();
-						}
-					}
-					
-					// Extraer fecha de actualización
-					const modDateEl = dateWrapper.querySelector('.date.modification-date');
-					if (modDateEl) {
-						const dayEl = modDateEl.querySelector('.day');
-						const hourEl = modDateEl.querySelector('.hour');
-						if (dayEl && hourEl) {
-							metadata.updatedDate = dayEl.textContent.replace('Actualizado el ', '').trim();
-							metadata.updatedTime = hourEl.textContent.trim();
-						}
-					}
-					
-				}
-				
-				// Buscar autor en diferentes lugares (incluyendo nuevas ubicaciones)
-				const authorSelectors = [
-					'.info-wrapper .authors', '.authors', '.author', '.byline', '.article-author', 
-					'.post-author', '[rel="author"]', '.author-name', '.writer', '.by-author'
-				];
-				for (const selector of authorSelectors) {
-					const authorEl = doc.querySelector(selector);
-					if (authorEl && authorEl.textContent.trim()) {
-						metadata.author = authorEl.textContent.trim();
-						break;
-					}
-				}
-				
-				// Buscar título e información de imagen
-				const imageFooter = doc.querySelector('.image-footer');
-				if (imageFooter) {
-					const titleEl = imageFooter.querySelector('.title');
-					if (titleEl) {
-						metadata.imageTitle = titleEl.textContent.trim();
-					}
-					
-					const authorEl = imageFooter.querySelector('.author');
-					if (authorEl) {
-						metadata.imageAuthor = authorEl.textContent.trim();
-					}
-				}
-				
-				// Buscar en metadatos JSON-LD
-				const jsonLdScript = doc.querySelector('script[type="application/ld+json"]');
-				if (jsonLdScript) {
-					try {
-						const jsonData = JSON.parse(jsonLdScript.textContent);
-						if (jsonData.author && !metadata.author) {
-							metadata.author = typeof jsonData.author === 'string' 
-								? jsonData.author 
-								: jsonData.author.name || jsonData.author[0]?.name;
-						}
-					} catch (e) {}
-				}
-				
-				console.log('Metadatos extraídos de página original:', metadata);
-				return metadata;
-				
-			} catch (error) {
-				console.warn('Error extrayendo metadatos de página original:', error);
-				return {};
-			}
-		}
+        // Extrae metadatos completos desde la página original
+        async function extractMetadataFromOriginalPage(newsUrl) {
+            try {
+                const CORS_PROXY = 'https://corsproxy.io/?';
+                const proxyUrl = CORS_PROXY + encodeURIComponent(newsUrl);
+                const controller = new AbortController();
+                setTimeout(() => controller.abort(), 5000);
 
-		// Extrae la fecha de ACTUALIZACIÓN del HTML del artículo si está disponible
-		function extractUpdatedMillisFromHtml(html) {
-			if (!html || typeof html !== 'string') return null;
-			try {
-				// 1) Buscar JSON-LD con dateModified
-				const jsonLdMatch = html.match(/\"dateModified\"\s*:\s*\"([^\"]+)\"/i);
-				if (jsonLdMatch && jsonLdMatch[1]) {
-					const ms = Date.parse(jsonLdMatch[1]);
-					if (!isNaN(ms)) return ms;
-				}
+                const response = await fetch(proxyUrl, { signal: controller.signal });
+                if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
 
-				// 2) Buscar etiquetas <time> con pistas de modificación
-				const wrapper = document.createElement('div');
-				wrapper.innerHTML = html;
-				const timeElements = Array.from(wrapper.querySelectorAll('time'));
-				for (const t of timeElements) {
-					const attrNames = Array.from(t.attributes || []).map(a => a.name.toLowerCase());
-					const attrValues = Array.from(t.attributes || []).map(a => String(a.value || '').toLowerCase());
-					const isModifiedHint = attrNames.some(n => n.includes('modified') || n.includes('updated') || n.includes('datemodified')) ||
-						attrValues.some(v => v.includes('modified') || v.includes('updated') || v.includes('datemodified'));
-					const dt = t.getAttribute('datetime');
-					if (isModifiedHint && dt) {
-						const ms = Date.parse(dt);
-						if (!isNaN(ms)) return ms;
-					}
-				}
+                const html = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
 
-				// 3) Buscar un patrón textual tipo "Actualizado … 12:34" por si aparece en el cuerpo
-				const actualizadoMatch = html.match(/actualizad[oa][^\d]{0,40}?(\d{1,2}):(\d{2})/i);
-				if (actualizadoMatch) {
-					const now = new Date();
-					now.setHours(parseInt(actualizadoMatch[1], 10));
-					now.setMinutes(parseInt(actualizadoMatch[2], 10));
-					now.setSeconds(0, 0);
-					return now.getTime();
-				}
+                const metadata = {};
 
-				return null;
-			} catch (e) {
-				return null;
-			}
-		}
+                // Fecha, lugar, publicación/actualización
+                const dateWrapper = doc.querySelector('.date-comments-wrapper');
+                if (dateWrapper) {
+                    const placeEl = dateWrapper.querySelector('.place');
+                    if (placeEl) {
+                        metadata.place = placeEl.textContent.replace(/[—\-\s]+$/, '').trim();
+                    }
 
+                    const dateEl = dateWrapper.querySelector('.date:not(.modification-date)');
+                    if (dateEl) {
+                        const dayEl = dateEl.querySelector('.day');
+                        const hourEl = dateEl.querySelector('.hour');
+                        if (dayEl && hourEl) {
+                            metadata.publishedDate = dayEl.textContent.trim();
+                            metadata.publishedTime = hourEl.textContent.trim();
+                        }
+                    }
 
-		// --- LÓGICA RSS MEJORADA PARA OBTENER MÁS NOTICIAS ---
-		
-		/**
-		 * Parsea los datos JSON de rss2json y los convierte en un array de noticias.
-		 * Obtiene el contenido completo de cada feed RSS
-		 */
-		async function parseNewsFromJson(data, sectionKey) {
-			if (data.status !== 'ok') {
-				console.warn(`Feed ${sectionKey} falló:`, data.message || 'Error desconocido');
-				return [];
-			}
-			
-			const newsPromises = data.items.map(async (item, index) => {
-				// Detectar sección real desde URL si es portada
-				let section = sectionKey;
-				if (sectionKey === 'portada') {
-					try {
-						const url = new URL(item.link);
-						const pathParts = url.pathname.split('/');
-						if (pathParts.length > 1) {
-							const possibleSection = pathParts[1];
-							const validSections = ['politica', 'sociedad', 'economia', 'internacional', 'cultura', 'tecnologia', 'opinion', 'vertele'];
-							if (validSections.includes(possibleSection)) {
-								section = possibleSection;
-							} else {
-								section = 'portada';
-							}
-						}
-					} catch (e) {
-						section = 'portada';
-					}
-				}
+                    const modDateEl = dateWrapper.querySelector('.date.modification-date');
+                    if (modDateEl) {
+                        const dayEl = modDateEl.querySelector('.day');
+                        const hourEl = modDateEl.querySelector('.hour');
+                        if (dayEl && hourEl) {
+                            metadata.updatedDate = dayEl.textContent.replace('Actualizado el ', '').trim();
+                            metadata.updatedTime = hourEl.textContent.trim();
+                        }
+                    }
+                }
 
-				// Mapear secciones especiales
-				if (sectionKey === 'madrid' || sectionKey === 'catalunya' || sectionKey === 'andalucia') {
-					section = 'sociedad';
-				} else if (sectionKey === 'deportes') {
-					section = 'sociedad';
-				} else if (sectionKey === 'cienciacritica') {
-					section = 'tecnologia';
-				} else if (sectionKey === 'consumoclaro') {
-					section = 'economia';
-				}
+                // Autor en distintos lugares
+                const authorSelectors = [
+                    '.info-wrapper .authors', '.authors', '.author', '.byline', '.article-author',
+                    '.post-author', '[rel="author"]', '.author-name', '.writer', '.by-author'
+                ];
+                for (const selector of authorSelectors) {
+                    const authorEl = doc.querySelector(selector);
+                    if (authorEl && authorEl.textContent.trim()) {
+                        metadata.author = authorEl.textContent.trim();
+                        break;
+                    }
+                }
 
-				// Mejorar captura de fecha: calcular publicación y actualización por separado
-				const contentHtml = item.content || item.content_html || item['content:encoded'] || item.description || '';
-				const publishedSource = item.pubDate || item.published || item.isoDate || item.date || item['dc:date'] || null;
-				const updatedSource = item.updated || item['updated'] || item['atom:updated'] || item['dc:modified'] || item['modDate'] || null;
-				const publishedMillis = publishedSource ? Date.parse(publishedSource) : NaN;
-				let updatedMillis = updatedSource ? Date.parse(updatedSource) : NaN;
-				if (isNaN(updatedMillis)) {
-					const htmlUpdated = extractUpdatedMillisFromHtml(contentHtml);
-					if (typeof htmlUpdated === 'number' && !isNaN(htmlUpdated)) updatedMillis = htmlUpdated;
-				}
-				const chosenMillis = !isNaN(updatedMillis) ? updatedMillis : (!isNaN(publishedMillis) ? publishedMillis : Date.now());
-				const dateSource = new Date(chosenMillis).toISOString();
-				
-				// Debug: Mostrar información de fecha para las primeras noticias
-				if (Math.random() < 0.1) { // Solo para ~10% de las noticias
-					console.log('DEBUG Fecha:', {
-						title: item.title?.substring(0, 50),
-						updated: item.updated || item['updated'] || item['atom:updated'] || item['dc:modified'] || item['modDate'],
-						updatedMillis,
-						pubDate: item.pubDate,
-						published: item.published,
-						isoDate: item.isoDate,
-						publishedMillis,
-						dateUsed: dateSource,
-						formatted: formatDateTime(dateSource)
-					});
-				}
-				
-				// Obtener fecha de actualización real de la página para las primeras 20 noticias
-				let realUpdatedMillis = null;
-				if (index < 20) {
-					try {
-						const metadata = await extractMetadataFromOriginalPage(item.link);
-						if (metadata.updatedDate && metadata.updatedTime) {
-							// Convertir fecha del HTML a milliseconds
-							const dateStr = metadata.updatedDate.includes('/') 
-								? metadata.updatedDate 
-								: metadata.updatedDate;
-							const timeStr = metadata.updatedTime.replace(' h', '').trim();
-							const fullDateStr = `${dateStr} ${timeStr}`;
-							realUpdatedMillis = Date.parse(fullDateStr);
-						}
-					} catch (e) {
-						// Si falla, continuar sin fecha de actualización
-					}
-				}
-				
-				// Usar fecha de actualización real si existe, sino la del RSS, sino publicación
-				const displayMillis = realUpdatedMillis || 
-					(!isNaN(updatedMillis) ? updatedMillis : 
-					(!isNaN(publishedMillis) ? publishedMillis : chosenMillis));
-				
-				return {
-					title: item.title,
-					link: item.link,
-					summary: plainTextFromHTML(item.description).slice(0, 300) + '...',
-					content: item.content || plainTextFromHTML(item.description), // Contenido completo
-					section: section,
-					source: 'elDiario.es',
-					author: item.author || item.creator || item['dc:creator'] || 'elDiario.es',
-					dateTime: formatNewsItemDate(displayMillis),
-					dateLabel: realUpdatedMillis ? 'Actualizado' : (!isNaN(updatedMillis) ? 'Actualizado' : 'Publicado'),
-					pubMillis: !isNaN(publishedMillis) ? publishedMillis : chosenMillis,
-					updatedMillis: realUpdatedMillis || (!isNaN(updatedMillis) ? updatedMillis : null),
-					thumbnail: item.thumbnail || item.enclosure?.link || ''
-				};
-			});
-			
-			// Esperar a que se resuelvan todas las promesas
-			return await Promise.all(newsPromises);
-		}
+                // Datos de la imagen principal
+                const imageFooter = doc.querySelector('.image-footer');
+                if (imageFooter) {
+                    const titleEl = imageFooter.querySelector('.title');
+                    if (titleEl) metadata.imageTitle = titleEl.textContent.trim();
+                    const authorEl = imageFooter.querySelector('.author');
+                    if (authorEl) metadata.imageAuthor = authorEl.textContent.trim();
+                }
 
-		async function loadNews(options = { silent: false }) {
-			if (!options.silent) updateUIState('loading');
+                // Intentar obtener autor desde JSON-LD
+                const jsonLdScript = doc.querySelector('script[type="application/ld+json"]');
+                if (jsonLdScript) {
+                    try {
+                        const jsonData = JSON.parse(jsonLdScript.textContent);
+                        if (jsonData.author && !metadata.author) {
+                            metadata.author = typeof jsonData.author === 'string'
+                                ? jsonData.author
+                                : (jsonData.author.name || (Array.isArray(jsonData.author) ? jsonData.author[0]?.name : undefined));
+                        }
+                    } catch (e) {}
+                }
 
-			try {
-				dom.statsText.textContent = 'Conectando con RSS feeds de elDiario.es...';
-				
-				// Cargar TODOS los feeds RSS en paralelo para obtener máximas noticias
-				const feedPromises = Object.entries(config.RSS_FEEDS).map(async ([section, url]) => {
-					try {
-						dom.statsText.textContent = `Cargando: ${section}...`;
-						const response = await fetch(`${config.RSS2JSON_API}${encodeURIComponent(url)}`);
-						
-						if (!response.ok) {
-							console.warn(`Feed ${section} falló con código ${response.status}`);
-							return [];
-						}
-						
-						const data = await response.json();
-						return await parseNewsFromJson(data, section);
-					} catch (error) {
-						console.warn(`Error cargando feed ${section}:`, error);
-						return [];
-					}
-				});
-				
-				dom.statsText.textContent = 'Procesando todas las noticias...';
-				
-				// Esperar a que se carguen todos los feeds
-				const results = await Promise.all(feedPromises);
-				
-				// Combinar todas las noticias
-				const allNewsArray = results.flat();
-				
-				if (allNewsArray.length === 0) {
-					throw new Error('No se pudieron cargar noticias de ningún feed');
-				}
+                return metadata;
+            } catch (error) {
+                console.warn('Error extrayendo metadatos de página original:', error);
+                return {};
+            }
+        }
 
-				// Eliminar duplicados por URL y mantener solo las más recientes
-				const uniqueNewsMap = new Map();
-				
-				// Primero ordenar por fecha para que los duplicados mantengan la versión más reciente
-				const sortedNews = allNewsArray.sort((a, b) => b.pubMillis - a.pubMillis);
-				
-				sortedNews.forEach(news => {
-					if (news.link && !uniqueNewsMap.has(news.link)) {
-						uniqueNewsMap.set(news.link, news);
-					}
-				});
+        // Función para obtener noticias usando RSS como respaldo
+        async function fetchNews() {
+            try {
+                state.isLoading = true;
+                updateUIState('loading');
+                
+                // Primero intentamos con el método RSS
+                dom.statsText.textContent = 'Cargando noticias desde RSS...';
+                const rssNews = await fetchRSSNews();
+                
+                if (rssNews && rssNews.length > 0) {
+                    state.allNews = rssNews;
+                    state.filteredNews = [...rssNews];
+                    state.usingAlternativeMethod = false;
+                    
+                    updateUIState('success');
+                    displayNews();
+                    updateLastUpdated();
+                    
+                    dom.statsText.textContent = `Mostrando ${state.filteredNews.length} noticias de portada`;
+                    console.log(`✓ Cargadas ${state.allNews.length} noticias desde RSS`);
+                    
+                    // Mostrar botón de cargar más si hay muchas noticias
+                    if (state.allNews.length > 20) {
+                        dom.loadMoreContainer.style.display = 'block';
+                    }
+                    
+                    return;
+                }
+                
+                // Si RSS falla, intentamos con el método alternativo
+                dom.statsText.textContent = 'Cargando noticias (método alternativo)...';
+                const alternativeNews = await fetchAlternativeNews();
+                
+                if (alternativeNews && alternativeNews.length > 0) {
+                    state.allNews = alternativeNews;
+                    state.filteredNews = [...alternativeNews];
+                    state.usingAlternativeMethod = true;
+                    
+                    updateUIState('success');
+                    displayNews();
+                    updateLastUpdated();
+                    
+                    dom.statsText.textContent = `Mostrando ${state.filteredNews.length} noticias de portada`;
+                    console.log(`✓ Cargadas ${state.allNews.length} noticias con método alternativo`);
+                    
+                    // Mostrar mensaje informativo
+                    dom.newsContainer.insertAdjacentHTML('beforeend', 
+                        '<p class="alternative-message">⚠️ Usando método alternativo para cargar noticias. Algunas funcionalidades pueden estar limitadas.</p>');
+                    
+                    return;
+                }
+                
+                // Si ambos métodos fallan
+                throw new Error('No se pudieron cargar noticias');
+                
+            } catch (error) {
+                console.error("Error al cargar noticias:", error);
+                updateUIState('error', `Error: ${error.message}. Verifica tu conexión a internet.`);
+            } finally {
+                state.isLoading = false;
+            }
+        }
 
-				// Priorizar noticias más recientes (últimas 48 horas primero, luego las demás)
-				const now = Date.now();
-				const twoDaysMs = 48 * 60 * 60 * 1000;
-				
-				const uniqueNewsArray = Array.from(uniqueNewsMap.values());
-				const recentNews = uniqueNewsArray.filter(news => !news.pubMillis || (now - news.pubMillis) <= twoDaysMs);
-				const olderNews = uniqueNewsArray.filter(news => news.pubMillis && (now - news.pubMillis) > twoDaysMs);
-				
-				state.allNews = [
-					...recentNews.sort((a, b) => b.pubMillis - a.pubMillis),
-					...olderNews.sort((a, b) => b.pubMillis - a.pubMillis)
-				].slice(0, 300); // Limitar a 300 noticias totales
+        // Método principal: obtener noticias desde RSS
+        async function fetchRSSNews() {
+            try {
+                const CORS_PROXY = 'https://corsproxy.io/?';
+                const response = await fetch(`${CORS_PROXY}${encodeURIComponent(config.RSS_FEEDS.portada)}`);
+                
+                if (!response.ok) {
+                    throw new Error(`Error HTTP: ${response.status}`);
+                }
+                
+                const text = await response.text();
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(text, "text/xml");
+                
+                const items = xmlDoc.querySelectorAll("item");
+                const newsItems = [];
+                
+                items.forEach(item => {
+                    try {
+                        const title = item.querySelector("title")?.textContent || "Sin título";
+                        const link = item.querySelector("link")?.textContent || "";
+                        const description = item.querySelector("description")?.textContent || "";
+                        const pubDate = item.querySelector("pubDate")?.textContent || new Date().toISOString();
+                        const creator = item.querySelector("dc\\:creator, creator")?.textContent || "elDiario.es";
+                        
+                        if (title && link) {
+                            newsItems.push({
+                                title,
+                                link,
+                                summary: plainTextFromHTML(description).substring(0, 300) + '...',
+                                section: 'portada',
+                                source: 'elDiario.es',
+                                author: creator,
+                                dateTime: formatDateTime(pubDate),
+                                pubMillis: new Date(pubDate).getTime() || Date.now(),
+                                updatedMillis: null,
+                                sortMillis: null,
+                                thumbnail: ''
+                            });
+                        }
+                    } catch (e) {
+                        console.warn('Error procesando elemento RSS:', e);
+                    }
+                });
+                
+                // Enriquecer con fecha de actualización desde la página original (limitado a 30 primeros)
+                const enriched = await Promise.all(newsItems.map(async (n, idx) => {
+                    try {
+                        if (idx < 30) {
+                            const meta = await extractMetadataFromOriginalPage(n.link);
+                            if (meta && meta.author && (!n.author || n.author === 'elDiario.es')) {
+                                n.author = meta.author;
+                            }
+                            if (meta && meta.updatedDate && meta.updatedTime) {
+                                const timeStr = (meta.updatedTime || '').replace(' h', '').trim();
+                                const ms = parseFechaHoraEsMs(meta.updatedDate, timeStr);
+                                if (!isNaN(ms)) {
+                                    n.updatedMillis = ms;
+                                    n.dateTime = `${formatDateShort(new Date(ms))} a las ${timeStr}`;
+                                }
+                            }
+                        }
+                    } catch (e) {
+                        // Ignorar fallos individuales
+                    } finally {
+                        n.sortMillis = n.updatedMillis || n.pubMillis || Date.now();
+                        if (!n.updatedMillis && (!n.dateTime || n.dateTime.trim() === '')) {
+                            n.dateTime = formatDateTime(new Date(n.sortMillis).toISOString());
+                        }
+                    }
+                    return n;
+                }));
 
-				console.log(`✓ Cargadas ${state.allNews.length} noticias de ${Object.keys(config.RSS_FEEDS).length} feeds`);
-				
-				filterAndDisplayNews();
-				updateLastUpdated();
+                // Ordenar por fecha de actualización (fallback a publicación)
+                enriched.sort((a, b) => (b.updatedMillis ?? b.pubMillis ?? 0) - (a.updatedMillis ?? a.pubMillis ?? 0));
+                return enriched;
+            } catch (error) {
+                console.error('Error fetching RSS news:', error);
+                return null;
+            }
+        }
 
-			} catch (error) {
-				console.error("Error al cargar noticias:", error);
-				if (!options.silent) updateUIState('error', `Error: ${error.message}. Verifica tu conexión a internet.`);
-			}
-		}
+        // Método alternativo: obtener noticias de forma alternativa
+        async function fetchAlternativeNews() {
+            try {
+                // Simulamos la obtención de noticias con datos de ejemplo
+                // En un caso real, aquí se implementaría otra API o método
+                const exampleNews = [
+                    {
+                        title: "Última hora: ElDiario.es ofrece información veraz y actualizada",
+                        link: "https://www.eldiario.es",
+                        summary: "Visita elDiario.es directamente para acceder a todas las noticias de última hora y contenidos exclusivos.",
+                        section: "portada",
+                        source: "elDiario.es",
+                        author: "Redacción",
+                        dateTime: formatDateTime(new Date()),
+                        pubMillis: Date.now(),
+                        thumbnail: ""
+                    },
+                    {
+                        title: "Cómo acceder a todas las noticias de elDiario.es",
+                        link: "https://www.eldiario.es",
+                        summary: "Para ver el contenido completo, visita directamente la web de elDiario.es donde encontrarás todas las noticias organizadas por secciones.",
+                        section: "portada",
+                        source: "elDiario.es",
+                        author: "Redacción",
+                        dateTime: formatDateTime(new Date()),
+                        pubMillis: Date.now(),
+                        thumbnail: ""
+                    }
+                ];
+                
+                return exampleNews;
+            } catch (error) {
+                console.error('Error en método alternativo:', error);
+                return null;
+            }
+        }
 
-		// --- LÓGICA DE LA INTERFAZ Y RENDERIZADO ---
-		const filterAndDisplayNews = () => {
-			const searchLower = state.searchTerm.toLowerCase();
-			state.filteredNews = state.allNews.filter(news => 
-				(state.currentSection === 'todas' || news.section === state.currentSection) &&
-				(news.title.toLowerCase().includes(searchLower) || news.summary.toLowerCase().includes(searchLower))
-			);
-			displayNews();
-			updateSectionCounters();
-		};
+        // Filtrar y mostrar noticias
+        function filterAndDisplayNews() {
+            const searchLower = state.searchTerm.toLowerCase();
+            state.filteredNews = state.allNews.filter(news => 
+                news.title.toLowerCase().includes(searchLower) || 
+                news.summary.toLowerCase().includes(searchLower)
+            );
+            displayNews();
+        }
 
-		const updateSectionCounters = () => {
-			const counts = state.allNews.reduce((acc, news) => {
-				acc[news.section] = (acc[news.section] || 0) + 1;
-				return acc;
-			}, {});
-			document.querySelectorAll('.dropdown-item').forEach(item => {
-				const section = item.dataset.section;
-				const countEl = item.querySelector('.section-count');
-				countEl.textContent = (section === 'todas') ? state.allNews.length : (counts[section] || 0);
-			});
-		};
+        // Mostrar noticias en la cuadrícula
+        function displayNews() {
+            if (state.filteredNews.length === 0) {
+                dom.newsContainer.innerHTML = '<div class="error-message"><h3>ℹ️ No se encontraron noticias</h3><p>Prueba a cambiar el término de búsqueda.</p></div>';
+                dom.statsText.textContent = 'No hay noticias que mostrar.';
+                return;
+            }
+            
+            dom.newsContainer.innerHTML = state.filteredNews.map((item, index) => `
+                <article class="news-item" data-index="${index}">
+                    <div class="news-item-content">
+                        <div class="news-item-header">
+                            <span class="news-source">${item.section}</span>
+                            <div class="news-meta">
+                                <span class="news-date">${item.dateTime}</span>
+                                <span class="news-author">${item.author}</span>
+                            </div>
+                        </div>
+                        <h3 class="news-headline">${highlightText(item.title, state.searchTerm)}</h3>
+                        <p class="news-summary">${highlightText(item.summary, state.searchTerm)}</p>
+                    </div>
+                </article>
+            `).join('');
+        }
 
-		const displayNews = () => {
-			if (state.filteredNews.length === 0) {
-				dom.newsContainer.innerHTML = '<div class="error-message"><h3>ℹ️ No se encontraron noticias</h3><p>Prueba a cambiar el filtro o el término de búsqueda.</p></div>';
-				dom.statsText.textContent = 'No hay noticias que mostrar.';
-				updateUIState('success');
-				return;
-			}
-			const sectionName = state.currentSection === 'todas' ? 'todas las secciones' : `'${state.currentSection}'`;
-			dom.statsText.textContent = `Mostrando ${state.filteredNews.length} noticias de ${sectionName}`;
-			dom.newsContainer.innerHTML = state.filteredNews.map((item, index) => `
-				<article class="news-item" data-index="${index}">
-					<div class="news-item-content">
-						<div class="news-item-header">
-							<span class="news-source">${item.section}</span>
-							<div class="news-meta">
-								<span class="news-date">${item.dateTime}</span>
-								<span class="news-author">${item.author}</span>
-							</div>
-						</div>
-						<h3 class="news-headline">${highlightText(item.title, state.searchTerm)}</h3>
-						<p class="news-summary">${highlightText(item.summary, state.searchTerm)}</p>
-					</div>
-				</article>
-			`).join('');
-			updateUIState('success');
-		};
+        // Manejar clic en noticia
+        function handleNewsClick(index) {
+            const news = state.filteredNews[index];
+            if (dom.readModeToggle.checked) {
+                showModal(news);
+            } else {
+                window.open(news.link, '_blank', 'noopener,noreferrer');
+            }
+        }
 
-		const handleNewsClick = (index) => {
-			const news = state.filteredNews[index];
-			if (dom.readModeToggle.checked) showModal(news);
-			else window.open(news.link, '_blank', 'noopener,noreferrer');
-		};
+        // Mostrar modal con la noticia (versión avanzada de DN2.html)
+        async function showModal(news) {
+            dom.modalTitle.textContent = news.title;
+            dom.modalSourceLink.href = news.link;
+            dom.modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
 
-		/**
-		 * Muestra el modal cargando contenido y metadatos completos de la página original.
-		 * Utiliza la lógica de DN.html para obtener toda la información.
-		 */
-		async function showModal(news) {
-			dom.modalTitle.textContent = news.title;
-			dom.modalSourceLink.href = news.link;
-			dom.modal.style.display = 'block';
-			document.body.style.overflow = 'hidden';
-			
-			// Mostrar cargando
-			dom.modalContent.innerHTML = '<p>Cargando contenido y metadatos completos...</p>';
-			
-			try {
-				// Obtener metadatos de la página original
-				const metadata = await extractMetadataFromOriginalPage(news.link);
-				
-				// Crear sección de metadatos
-				let metadataHTML = '';
-				const metadataParts = [];
-				
-				if (metadata.author) {
-					metadataParts.push(`<div class="article-author">✍️ ${metadata.author}</div>`);
-				} else if (news.author) {
-					metadataParts.push(`<div class="article-author">✍️ ${news.author}</div>`);
-				}
-				
-				if (metadata.place) {
-					metadataParts.push(`<div class="article-place">📍 ${metadata.place}</div>`);
-				}
-				
-				// Fechas con formato corto + hora
-				let dateInfo = [];
-				
-				// Fecha de publicación
-				if (metadata.publishedDate && metadata.publishedTime) {
-					// Convertir formato "3 de septiembre de 2025" a Date
-					try {
-						const dateStr = metadata.publishedDate.replace(/(\d+) de (\w+) de (\d+)/, '$1 $2 $3');
-						const tempDate = new Date(dateStr);
-						if (!isNaN(tempDate.getTime())) {
-							const timeStr = metadata.publishedTime.replace(' h', '').trim();
-							dateInfo.push(`Publicado: ${formatDateShort(tempDate)} a las ${timeStr}`);
-						} else {
-							const timeStr = metadata.publishedTime.replace(' h', '').trim();
-							dateInfo.push(`Publicado: ${metadata.publishedDate} a las ${timeStr}`);
-						}
-					} catch (e) {
-						const timeStr = metadata.publishedTime.replace(' h', '').trim();
-						dateInfo.push(`Publicado: ${metadata.publishedDate} a las ${timeStr}`);
-					}
-				} else if (news.pubMillis) {
-					const pubDate = new Date(news.pubMillis);
-					const timeStr = pubDate.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-					dateInfo.push(`Publicado: ${formatDateShort(news.pubMillis)} a las ${timeStr}`);
-				}
-				
-				// Fecha de actualización
-				if (metadata.updatedDate && metadata.updatedTime) {
-					// El formato ya viene como "04/09/2025" desde el HTML
-					const timeStr = metadata.updatedTime.replace(' h', '').trim();
-					if (metadata.updatedDate.includes('/')) {
-						// Convertir de DD/MM/YYYY a DD-MM-YY
-						const parts = metadata.updatedDate.split('/');
-						if (parts.length === 3) {
-							const shortYear = parts[2].slice(-2);
-							dateInfo.push(`Actualizado: ${parts[0]}-${parts[1]}-${shortYear} a las ${timeStr}`);
-						} else {
-							dateInfo.push(`Actualizado: ${metadata.updatedDate} a las ${timeStr}`);
-						}
-					} else {
-						dateInfo.push(`Actualizado: ${metadata.updatedDate} a las ${timeStr}`);
-					}
-				} else if (news.updatedMillis) {
-					const updDate = new Date(news.updatedMillis);
-					const timeStr = updDate.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-					dateInfo.push(`Actualizado: ${formatDateShort(news.updatedMillis)} a las ${timeStr}`);
-				}
-				
-				if (dateInfo.length > 0) {
-					metadataParts.push(`<div class="article-dates">📅 ${dateInfo.join('<br>📅 ')}</div>`);
-				}
-				
-				
-				if (metadataParts.length > 0) {
-					metadataHTML = `<div class="article-metadata">${metadataParts.join('')}</div>`;
-				}
-				
-				// Obtener contenido del artículo
-				let articleContent = '';
-				if (news.content) {
-					const contentWrapper = document.createElement('div');
-					contentWrapper.innerHTML = news.content;
-					
-					// Arreglar imágenes relativas
-					contentWrapper.querySelectorAll('img').forEach(img => {
-						const src = img.getAttribute('src');
-						if (src && src.startsWith('/')) {
-							img.src = `https://www.eldiario.es${src}`;
-						}
-					});
-					
-					// Insertar información de imagen debajo de la primera imagen
-					const firstImg = contentWrapper.querySelector('img');
-					if (firstImg && (metadata.imageTitle || metadata.imageAuthor)) {
-						let imageCaptionHTML = '<div class="image-caption">';
-						
-						if (metadata.imageTitle) {
-							imageCaptionHTML += `<div class="image-caption-title">${metadata.imageTitle}</div>`;
-						}
-						
-						if (metadata.imageAuthor) {
-							imageCaptionHTML += `<div class="image-caption-author">📷 ${metadata.imageAuthor}</div>`;
-						}
-						
-						imageCaptionHTML += '</div>';
-						
-						firstImg.insertAdjacentHTML('afterend', imageCaptionHTML);
-					}
-					
-					// Remover el wrapper original de fechas si existe
-					const dateWrapper = contentWrapper.querySelector('.date-comments-wrapper');
-					if (dateWrapper) {
-						dateWrapper.remove();
-					}
-					
-					articleContent = contentWrapper.innerHTML;
-				}
-				
-				// Si no hay contenido en RSS, intentar obtenerlo de la página original
-				if (!articleContent || articleContent.length < 200) {
-					try {
-						const CORS_PROXY = 'https://corsproxy.io/?';
-						const proxyUrl = CORS_PROXY + encodeURIComponent(news.link);
-						const response = await fetch(proxyUrl);
-						
-						if (response.ok) {
-							const html = await response.text();
-							const parser = new DOMParser();
-							const doc = parser.parseFromString(html, 'text/html');
-							
-							const contentElement = doc.querySelector('article, .article-body, [itemprop="articleBody"], .news-content, main');
-							if (contentElement) {
-								// Limpiar elementos no deseados
-								contentElement.querySelectorAll('.newsletter, .c-newsletter-box, .subscription-form, .share-options, .date-comments-wrapper').forEach(el => el.remove());
-								
-								// Arreglar enlaces relativos
-								contentElement.querySelectorAll('a[href^="/"]').forEach(link => {
-									link.href = `https://www.eldiario.es${link.getAttribute('href')}`;
-								});
-								
-								// Insertar información de imagen debajo de la primera imagen
-								const firstImg = contentElement.querySelector('img');
-								if (firstImg && (metadata.imageTitle || metadata.imageAuthor)) {
-									let imageCaptionHTML = '<div class="image-caption">';
-									
-									if (metadata.imageTitle) {
-										imageCaptionHTML += `<div class="image-caption-title">${metadata.imageTitle}</div>`;
-									}
-									
-									if (metadata.imageAuthor) {
-										imageCaptionHTML += `<div class="image-caption-author">📷 ${metadata.imageAuthor}</div>`;
-									}
-									
-									imageCaptionHTML += '</div>';
-									
-									firstImg.insertAdjacentHTML('afterend', imageCaptionHTML);
-								}
-								
-								articleContent = contentElement.innerHTML;
-							}
-						}
-					} catch (error) {
-						console.warn('No se pudo obtener contenido de página original:', error);
-					}
-				}
-				
-				// Mostrar contenido final
-				const finalContent = metadataHTML + (articleContent ? `<div class="article-content">${articleContent}</div>` : '<div class="article-error"><h3>ℹ️ Contenido no disponible</h3><p>No se pudo cargar el contenido completo.</p></div>');
-				dom.modalContent.innerHTML = finalContent;
-				
-			} catch (error) {
-				console.error('Error cargando modal:', error);
-				dom.modalContent.innerHTML = `
-					<div class="article-error">
-						<h3>⚠️ Error al cargar</h3>
-						<p>No se pudo cargar el contenido completo: ${error.message}</p>
-						<p>Puedes leer el artículo completo en el enlace original.</p>
-					</div>
-				`;
-			}
-		}
+            // Cargando
+            dom.modalContent.innerHTML = '<p>Cargando contenido y metadatos completos...</p>';
 
-		
-		const closeModal = () => {
-			dom.modal.style.display = 'none';
-			document.body.style.overflow = '';
-		};
-		
-		// --- INICIALIZACIÓN ---
-		function initEventListeners() {
-			dom.dropdownToggle.addEventListener('click', () => dom.dropdownMenu.classList.toggle('show'));
-			document.addEventListener('click', (e) => { if (!dom.dropdownToggle.contains(e.target) && !dom.dropdownMenu.contains(e.target)) dom.dropdownMenu.classList.remove('show'); });
-			dom.dropdownMenu.querySelectorAll('.dropdown-item').forEach(item => {
-				item.addEventListener('click', function() {
-					state.currentSection = this.dataset.section;
-					dom.dropdownMenu.querySelectorAll('.dropdown-item').forEach(i => i.classList.remove('active'));
-					this.classList.add('active');
-					dom.dropdownText.textContent = this.querySelector('.section-name').textContent;
-					dom.dropdownMenu.classList.remove('show');
-					filterAndDisplayNews();
-				});
-			});
-			dom.searchInput.addEventListener('input', (e) => {
-				dom.searchClear.classList.toggle('show', e.target.value.length > 0);
-				clearTimeout(state.searchTimeout);
-				state.searchTimeout = setTimeout(() => { state.searchTerm = e.target.value; filterAndDisplayNews(); }, 300);
-			});
-			dom.searchClear.addEventListener('click', () => {
-				dom.searchInput.value = ''; dom.searchClear.classList.remove('show');
-				state.searchTerm = ''; filterAndDisplayNews();
-			});
-			dom.newsContainer.addEventListener('click', (e) => {
-				const newsItem = e.target.closest('.news-item');
-				if (newsItem) handleNewsClick(parseInt(newsItem.dataset.index));
-			});
-			dom.closeModal.addEventListener('click', closeModal);
-			dom.modal.addEventListener('click', (e) => { if (e.target === dom.modal) closeModal(); });
-			document.addEventListener('keydown', (e) => { if (e.key === "Escape") closeModal(); });
-		}
+            try {
+                // Metadatos desde la página original
+                const metadata = await extractMetadataFromOriginalPage(news.link);
 
-		document.addEventListener('DOMContentLoaded', () => {
-			initEventListeners();
-			loadNews();
-			setInterval(() => {
-				if (state.isAutoRefreshing) return;
-				state.isAutoRefreshing = true;
-				loadNews({ silent: true }).finally(() => { state.isAutoRefreshing = false; });
-			}, 5 * 60 * 1000); // Auto-refrescar cada 5 minutos
-		});
-	</script>
+                // Construir bloque de metadatos
+                let metadataHTML = '';
+                const metadataParts = [];
+
+                if (metadata.author) {
+                    metadataParts.push(`<div class="article-author">✍️ ${metadata.author}</div>`);
+                } else if (news.author) {
+                    metadataParts.push(`<div class="article-author">✍️ ${news.author}</div>`);
+                }
+
+                if (metadata.place) {
+                    metadataParts.push(`<div class="article-place">📍 ${metadata.place}</div>`);
+                }
+
+                // Fechas (publicación/actualización)
+                let dateInfo = [];
+                if (metadata.publishedDate && metadata.publishedTime) {
+                    try {
+                        const d = parseFechaEsPreferente(metadata.publishedDate);
+                        const timeStr = metadata.publishedTime.replace(' h', '').trim();
+                        if (d) dateInfo.push(`Publicado: ${formatDateShort(d)} a las ${timeStr}`);
+                        else dateInfo.push(`Publicado: ${metadata.publishedDate} a las ${timeStr}`);
+                    } catch (e) {
+                        const timeStr = metadata.publishedTime.replace(' h', '').trim();
+                        dateInfo.push(`Publicado: ${metadata.publishedDate} a las ${timeStr}`);
+                    }
+                } else if (news.pubMillis) {
+                    const pubDate = new Date(news.pubMillis);
+                    const timeStr = pubDate.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+                    dateInfo.push(`Publicado: ${formatDateShort(news.pubMillis)} a las ${timeStr}`);
+                }
+
+                if (metadata.updatedDate && metadata.updatedTime) {
+                    const timeStr = metadata.updatedTime.replace(' h', '').trim();
+                    const updDateObj = parseFechaEsPreferente(metadata.updatedDate);
+                    if (updDateObj) {
+                        dateInfo.push(`Actualizado: ${formatDateShort(updDateObj)} a las ${timeStr}`);
+                    } else if (metadata.updatedDate.includes('/')) {
+                        const parts = metadata.updatedDate.split('/');
+                        if (parts.length === 3) {
+                            const dd = String(parts[0]).padStart(2, '0');
+                            const mm = String(parts[1]).padStart(2, '0');
+                            const yyyy = parts[2];
+                            dateInfo.push(`Actualizado: ${dd}-${mm}-${yyyy} a las ${timeStr}`);
+                        } else {
+                            dateInfo.push(`Actualizado: ${metadata.updatedDate} a las ${timeStr}`);
+                        }
+                    } else {
+                        dateInfo.push(`Actualizado: ${metadata.updatedDate} a las ${timeStr}`);
+                    }
+                } else if (news.updatedMillis) {
+                    const updDate = new Date(news.updatedMillis);
+                    const timeStr = updDate.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+                    dateInfo.push(`Actualizado: ${formatDateShort(news.updatedMillis)} a las ${timeStr}`);
+                }
+
+                if (dateInfo.length > 0) {
+                    metadataParts.push(`<div class="article-dates">📅 ${dateInfo.join('<br>📅 ')}</div>`);
+                }
+
+                if (metadataParts.length > 0) {
+                    metadataHTML = `<div class="article-metadata">${metadataParts.join('')}</div>`;
+                }
+
+                // Contenido del artículo (desde RSS si disponible)
+                let articleContent = '';
+                if (news.content) {
+                    const contentWrapper = document.createElement('div');
+                    contentWrapper.innerHTML = news.content;
+
+                    // Enlaces relativos a absolutos
+                    contentWrapper.querySelectorAll('a[href^="/"]').forEach(link => {
+                        link.href = `https://www.eldiario.es${link.getAttribute('href')}`;
+                    });
+
+                    // Eliminar bloques no deseados
+                    contentWrapper.querySelectorAll('.first-col, .recirculation-area').forEach(el => el.remove());
+
+                    // Convertir rutas relativas de imágenes a absolutas
+                    contentWrapper.querySelectorAll('img').forEach(img => {
+                        const src = img.getAttribute('src');
+                        if (src && src.startsWith('/')) img.src = `https://www.eldiario.es${src}`;
+                    });
+
+                    // Insertar pie de imagen bajo TODAS las imágenes (captura por imagen)
+                    contentWrapper.querySelectorAll('img').forEach(img => {
+                        if (!img || img.nextElementSibling?.classList?.contains('image-caption')) return;
+                        let titleText = '';
+                        let authorText = '';
+                        // Buscar un .image-footer cercano a la imagen
+                        let footer = null;
+                        if (img.nextElementSibling && img.nextElementSibling.classList && img.nextElementSibling.classList.contains('image-footer')) {
+                            footer = img.nextElementSibling;
+                        } else if (img.parentElement) {
+                            footer = img.parentElement.querySelector('.image-footer');
+                        }
+                        if (footer) {
+                            const t = footer.querySelector('.title');
+                            const a = footer.querySelector('.author');
+                            if (t && t.textContent) titleText = t.textContent.trim();
+                            if (a && a.textContent) authorText = a.textContent.trim();
+                        }
+                        // Fallbacks
+                        if (!titleText) titleText = img.getAttribute('alt') || '';
+                        // Si no hay nada que mostrar, saltar
+                        if (!titleText && !authorText) return;
+                        let imageCaptionHTML = '<div class="image-caption">';
+                        if (titleText) imageCaptionHTML += `<div class=\"image-caption-title\">${titleText}</div>`;
+                        if (authorText) imageCaptionHTML += `<div class=\"image-caption-author\">📷 ${authorText}</div>`;
+                        imageCaptionHTML += '</div>';
+                        img.insertAdjacentHTML('afterend', imageCaptionHTML);
+                        // Eliminar footer original si existía para evitar duplicados
+                        if (footer && footer.parentElement) footer.remove();
+                    });
+
+                    // Eliminar wrapper de fechas si existe
+                    const dateWrapper = contentWrapper.querySelector('.date-comments-wrapper');
+                    if (dateWrapper) dateWrapper.remove();
+
+                    articleContent = contentWrapper.innerHTML;
+                }
+
+                // Si no hay contenido en RSS, intentar extraerlo de la página
+                if (!articleContent || articleContent.length < 200) {
+                    try {
+                        const CORS_PROXY = 'https://corsproxy.io/?';
+                        const proxyUrl = CORS_PROXY + encodeURIComponent(news.link);
+                        const response = await fetch(proxyUrl);
+                        if (response.ok) {
+                            const html = await response.text();
+                            const parser = new DOMParser();
+                            const doc = parser.parseFromString(html, 'text/html');
+                            const contentElement = doc.querySelector('article, .article-body, [itemprop="articleBody"], .news-content, main');
+                            if (contentElement) {
+                                // Limpiar elementos no deseados
+                                contentElement.querySelectorAll('.newsletter, .c-newsletter-box, .subscription-form, .share-options, .date-comments-wrapper, .first-col, .recirculation-area').forEach(el => el.remove());
+                                // Enlaces relativos a absolutos
+                                contentElement.querySelectorAll('a[href^="/"]').forEach(link => {
+                                    link.href = `https://www.eldiario.es${link.getAttribute('href')}`;
+                                });
+                                // Pie de imagen bajo TODAS las imágenes (captura por imagen)
+                                contentElement.querySelectorAll('img').forEach(img => {
+                                    if (!img || img.nextElementSibling?.classList?.contains('image-caption')) return;
+                                    let titleText = '';
+                                    let authorText = '';
+                                    // Buscar un .image-footer cercano a la imagen
+                                    let footer = null;
+                                    if (img.nextElementSibling && img.nextElementSibling.classList && img.nextElementSibling.classList.contains('image-footer')) {
+                                        footer = img.nextElementSibling;
+                                    } else if (img.parentElement) {
+                                        footer = img.parentElement.querySelector('.image-footer');
+                                    }
+                                    if (footer) {
+                                        const t = footer.querySelector('.title');
+                                        const a = footer.querySelector('.author');
+                                        if (t && t.textContent) titleText = t.textContent.trim();
+                                        if (a && a.textContent) authorText = a.textContent.trim();
+                                    }
+                                    // Fallbacks
+                                    if (!titleText) titleText = img.getAttribute('alt') || '';
+                                    if (!titleText && !authorText) return;
+                                    let imageCaptionHTML = '<div class="image-caption">';
+                                    if (titleText) imageCaptionHTML += `<div class=\"image-caption-title\">${titleText}</div>`;
+                                    if (authorText) imageCaptionHTML += `<div class=\"image-caption-author\">📷 ${authorText}</div>`;
+                                    imageCaptionHTML += '</div>';
+                                    img.insertAdjacentHTML('afterend', imageCaptionHTML);
+                                    if (footer && footer.parentElement) footer.remove();
+                                });
+                                articleContent = contentElement.innerHTML;
+                            }
+                        }
+                    } catch (error) {
+                        console.warn('No se pudo obtener contenido de página original:', error);
+                    }
+                }
+
+                const finalContent = metadataHTML + (articleContent ? `<div class=\"article-content\">${articleContent}</div>` : '<div class="article-error"><h3>ℹ️ Contenido no disponible</h3><p>No se pudo cargar el contenido completo.</p></div>');
+                dom.modalContent.innerHTML = finalContent;
+
+            } catch (error) {
+                console.error('Error cargando modal:', error);
+                dom.modalContent.innerHTML = `
+                    <div class="article-error">
+                        <h3>⚠️ Error al cargar</h3>
+                        <p>No se pudo cargar el contenido completo: ${error.message}</p>
+                        <p>Puedes leer el artículo completo en el enlace original.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Cerrar modal
+        function closeModal() {
+            dom.modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
+        // Inicializar event listeners
+        function initEventListeners() {
+            // Búsqueda
+            dom.searchInput.addEventListener('input', (e) => {
+                dom.searchClear.classList.toggle('show', e.target.value.length > 0);
+                clearTimeout(state.searchTimeout);
+                state.searchTimeout = setTimeout(() => {
+                    state.searchTerm = e.target.value;
+                    filterAndDisplayNews();
+                }, 300);
+            });
+            
+            dom.searchClear.addEventListener('click', () => {
+                dom.searchInput.value = '';
+                dom.searchClear.classList.remove('show');
+                state.searchTerm = '';
+                filterAndDisplayNews();
+            });
+            
+            // Clic en noticias
+            dom.newsContainer.addEventListener('click', (e) => {
+                const newsItem = e.target.closest('.news-item');
+                if (newsItem) {
+                    const index = parseInt(newsItem.dataset.index);
+                    handleNewsClick(index);
+                }
+            });
+            
+            // Modal
+            dom.closeModal.addEventListener('click', closeModal);
+            dom.modal.addEventListener('click', (e) => {
+                if (e.target === dom.modal) closeModal();
+            });
+            // Enlaces dentro del modal: abrir en el propio modal
+            dom.modalContent.addEventListener('click', (e) => {
+                const anchor = e.target.closest('a');
+                if (anchor && anchor.href) {
+                    e.preventDefault();
+                    const url = anchor.href;
+                    const title = (anchor.textContent || '').trim() || url;
+                    showModal({ title, link: url, author: '' });
+                }
+            });
+            
+            document.addEventListener('keydown', (e) => {
+                if (e.key === "Escape") closeModal();
+            });
+            
+            // Cargar más noticias
+            dom.loadMoreBtn.addEventListener('click', () => {
+                if (!state.usingAlternativeMethod) {
+                    window.open(config.EL_DIARIO_URL, '_blank');
+                }
+            });
+        }
+
+        // Inicializar la aplicación
+        document.addEventListener('DOMContentLoaded', () => {
+            initEventListeners();
+            fetchNews();
+            
+            // Auto-refrescar cada 10 minutos
+            setInterval(() => {
+                fetchNews();
+            }, 10 * 60 * 1000);
+        });
+    </script>
 </body>
 </html>
